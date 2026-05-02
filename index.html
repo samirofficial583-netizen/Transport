@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transporter Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0b1f33;
+      --navy-2: #12314f;
+      --teal: #00a6a6;
+      --teal-dark: #087f83;
+      --cyan: #dff8f6;
+      --surface: #ffffff;
+      --surface-soft: #f6f9fb;
+      --line: #d8e4ea;
+      --text: #102638;
+      --muted: #627383;
+      --warning: #d75050;
+      --shadow: 0 22px 55px rgba(13, 38, 58, 0.14);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: "Inter", Arial, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(135deg, rgba(0, 166, 166, 0.08) 25%, transparent 25%) 0 0 / 24px 24px,
+        linear-gradient(315deg, rgba(11, 31, 51, 0.05) 25%, transparent 25%) 0 0 / 28px 28px,
+        radial-gradient(circle at top left, rgba(0, 166, 166, 0.18), transparent 34rem),
+        linear-gradient(180deg, #edf5f7 0%, #f8fbfc 46%, #eef4f6 100%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app-shell {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 22px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 42%),
+        linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 62%, #064d55 100%);
+      box-shadow: var(--shadow);
+      color: #fff;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #8ee2dc;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .summary-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.11);
+      color: #eafdfb;
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 18px 0 12px;
+    }
+
+    .toolbar-title {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .toolbar-note {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .table-card {
+      overflow: hidden;
+      border: 1px solid rgba(216, 228, 234, 0.95);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 920px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f1f8f8;
+      color: #234054;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    td {
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--text);
+      font-size: 0.93rem;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(246, 249, 251, 0.86);
+    }
+
+    tbody tr:hover td {
+      background: var(--cyan);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .transport-name {
+      min-width: 290px;
+      font-weight: 700;
+      color: #102c42;
+    }
+
+    .gst-code {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 9px;
+      border: 1px solid #cbe4e5;
+      border-radius: 6px;
+      background: #f5fbfb;
+      color: #12314f;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .contact {
+      min-width: 170px;
+      color: #405568;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .action-cell,
+    .location-cell {
+      width: 94px;
+      text-align: center;
+    }
+
+    .btn,
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.86rem;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:focus-visible,
+    .map-btn:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(0, 166, 166, 0.3);
+      outline-offset: 2px;
+    }
+
+    .btn:hover,
+    .map-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(11, 31, 51, 0.16);
+    }
+
+    .copy-btn,
+    .save-btn,
+    .add-btn {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .copy-btn:hover,
+    .save-btn:hover,
+    .add-btn:hover {
+      background: var(--teal-dark);
+    }
+
+    .delete-btn {
+      background: var(--warning);
+      color: #fff;
+    }
+
+    .delete-btn:hover {
+      background: #b93f3f;
+    }
+
+    .map-btn {
+      background: #e7f7f5;
+      color: var(--teal-dark);
+      border: 1px solid #bfe6e1;
+    }
+
+    .map-btn.is-disabled {
+      pointer-events: none;
+      border-color: #f0c7c7;
+      background: #f9dfdf;
+      color: #a34848;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .add-btn {
+      min-height: 42px;
+      padding: 0 16px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-width: 160px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid #b9d5d8;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    .error {
+      display: block;
+      margin-top: 6px;
+      color: var(--warning);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    #toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 20;
+      max-width: min(360px, calc(100vw - 36px));
+      padding: 13px 16px;
+      border-radius: 8px;
+      background: rgba(11, 31, 51, 0.95);
+      color: #fff;
+      box-shadow: 0 18px 32px rgba(11, 31, 51, 0.24);
+      font-size: 0.92rem;
+      font-weight: 700;
+      opacity: 0;
+      transform: translateY(12px);
+      visibility: hidden;
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    tr.new-row td {
+      animation: fadeIn 0.35s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app-shell {
+        width: min(100% - 18px, 1180px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        padding: 18px;
+      }
+
+      .summary-chip {
+        justify-content: center;
+        width: 100%;
+      }
+
+      th,
+      td {
+        padding: 12px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .add-btn {
+        width: 100%;
+      }
+
+      #toast {
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Logistics directory</p>
+        <h1>Transporter Details</h1>
+      </div>
+      <div class="summary-chip">24 transporters listed</div>
+    </header>
+
+    <section class="toolbar" aria-label="Transport table tools">
+      <div>
+        <p class="toolbar-title">Saved transporter contacts</p>
+        <p class="toolbar-note">Copy GST numbers quickly and open valid map locations.</p>
+      </div>
+    </section>
+
+    <section class="table-card" aria-label="Transporter details table">
+      <div class="table-scroll">
+        <table id="transportTable">
+          <thead>
+            <tr>
+              <th>Name of Transport</th>
+              <th>G.S.T. Number</th>
+              <th>Contact Number</th>
+              <th>Copy</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="transport-name">PAVAN TRANSPORT - BARCILONA</td>
+              <td><span class="gst-code" id="gst1">24AAVFP9599E1ZC</span></td>
+              <td class="contact">+91 00000-00000</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst1')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/NA5x4WtrFa44oGyL9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">VIKASH TRANSPORT - ODHAV G.I.D.C.</td>
+              <td><span class="gst-code" id="gst2">24AIQPC2885H1Z3</span></td>
+              <td class="contact">+91 96248-05418</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst2')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/4uPNhs6X7CuovTJj8" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">KABRA EXPRESS LOGISTICS PVT LTD - ROAD NO 8.</td>
+              <td><span class="gst-code" id="gst3">24AAGCK6871L1Z2</span></td>
+              <td class="contact">+91 96388-66001</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst3')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/rbjqBFDhrMVqLF5L9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">SHREE PRAKASH TRANSPORT - ODHAV G.I.D.C.</td>
+              <td><span class="gst-code" id="gst4">24ACYPP9161H1ZW</span></td>
+              <td class="contact">+91 00000-00000</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst4')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/QB37bbUiTHuPFFAE8" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">ALPESH ROADWAYS - VEPARI</td>
+              <td><span class="gst-code" id="gst5">24AAEFA9684Q1ZP</span></td>
+              <td class="contact">+91 99099-90170</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst5')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/xB3gGZZjLayesJGHA" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">VIKASH TRADE &amp; TRANSPORT - IDAGAH</td>
+              <td><span class="gst-code" id="gst6">24AAQPR7210K1ZD</span></td>
+              <td class="contact">+91 00000-00000</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst6')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/cSjuuswAGPr8p52i8" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">JAMANAGAR TRANSPORT COMPANY - ODHAV</td>
+              <td><span class="gst-code" id="gst7">24AAOFJ0236F1ZN</span></td>
+              <td class="contact">+91 90990-41466</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst7')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/DZwSq2oznGKA2Y5C9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">DIAMOND TRANSPORT CO. - ODHAV SAMSAN</td>
+              <td><span class="gst-code" id="gst8">24ADCPK4931F1ZX</span></td>
+              <td class="contact">+91 90161-11277</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst8')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/8FvEwjfxDwz6NwDm7" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">AVINASH CARGO PVT LTD (A.C.P.L ) - SINGARAVA</td>
+              <td><span class="gst-code" id="gst9">24AAFCA7488L1Z6</span></td>
+              <td class="contact">+91 86696-73821</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst9')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/ZCWhHAZtZFDaomMy8" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">TRILOK CARGO SERVICE - CHOTALAL NI CHALI</td>
+              <td><span class="gst-code" id="gst10">24AAWFT7042D1ZZ</span></td>
+              <td class="contact">+91 98252-09690, 97234-33333</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst10')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/dz4Dywvnrk43effA9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">PATEL TRANSPORT</td>
+              <td><span class="gst-code" id="gst11">24AAEFP9744Q1ZH</span></td>
+              <td class="contact">+91 95121-80056</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst11')">Copy</button></td>
+              <td class="location-cell"><span class="map-btn is-disabled">No map</span></td>
+            </tr>
+            <tr>
+              <td class="transport-name">VIKASH ROAD CARRIER - BILESHWAR</td>
+              <td><span class="gst-code" id="gst12">24AIQPC2885H1Z3</span></td>
+              <td class="contact">+91 88490-08635</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst12')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/2pEXsLCf3Q2mcfKV9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">VRL LOGISTICS LTD - KATHAWADA G.I.D.C.</td>
+              <td><span class="gst-code" id="gst13">29AABCV3609C1ZJ</span></td>
+              <td class="contact">+91 74056-97617</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst13')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/f1DVELaZnrSF5u9Z6" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">H.H. ROADWAYS - ODHAV SAMSHAN</td>
+              <td><span class="gst-code" id="gst14">24AABFH2311L1ZT</span></td>
+              <td class="contact">+91 92271-93506</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst14')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/Dsacn2S5mJqdK7Dr9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">YASH ROADLINE - PREMDARAWAJA</td>
+              <td><span class="gst-code" id="gst15">24CMLPB7231H1Z9</span></td>
+              <td class="contact">+91 96018-73422</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst15')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/RmxSonfLub8DSPhg9" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">TCI EXPRESS LIMITED</td>
+              <td><span class="gst-code" id="gst16">06AADCT0663J4Z9</span></td>
+              <td class="contact">+91 81782-73023</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst16')">Copy</button></td>
+              <td class="location-cell"><span class="map-btn is-disabled">No map</span></td>
+            </tr>
+            <tr>
+              <td class="transport-name">SHUBH MANGAL ROADWAYS - ODHAV</td>
+              <td><span class="gst-code" id="gst17">24AAXFS7188Q2ZS</span></td>
+              <td class="contact">+91 82008-05023</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst17')">Copy</button></td>
+              <td class="location-cell"><span class="map-btn is-disabled">No map</span></td>
+            </tr>
+            <tr>
+              <td class="transport-name">SHREE KANAIYA TRANSPORT SERVICE</td>
+              <td><span class="gst-code" id="gst18">24AGBPP8515C1ZP</span></td>
+              <td class="contact">+91 98981-20368</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst18')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/Tzv4Q1mnkncnE5S27" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">BHAVANA ROADWAYS</td>
+              <td><span class="gst-code" id="gst19">24AADFB5223B1Z9</span></td>
+              <td class="contact">+91 98985-07561</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst19')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/oS31oP3fEAKT6xhu5" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">SHREE HARI ROADLINES</td>
+              <td><span class="gst-code" id="gst20">24ACAPP2720Q1ZI</span></td>
+              <td class="contact">+91 76003-23768,92277-70888</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst20')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/nQBafaaKeAfkPxyQ8?g_st=aw" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">RAVINDRA TRANSPORT CO.</td>
+              <td><span class="gst-code" id="gst21">24ACIPA6610J2ZX</span></td>
+              <td class="contact">+91 99988-20106</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst21')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/n8VvQDXP1rDUBu438" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">TANNA TRAVELS CO.</td>
+              <td><span class="gst-code" id="gst22">XXXXXXXXXXXXXXX</span></td>
+              <td class="contact">+91 00000-00000</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst22')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/PQtMAAtcCENgM75E7" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">JAY BHOLE TRANSPORT</td>
+              <td><span class="gst-code" id="gst23">XXXXXXXXXXXXXXX</span></td>
+              <td class="contact">+91 99250-38213</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst23')">Copy</button></td>
+              <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/AxdSNRBvr7mT8ke79" target="_blank" rel="noopener">Map</a></td>
+            </tr>
+            <tr>
+              <td class="transport-name">SURAT AHMEDABAD TRANSPORT PVT. LTD</td>
+              <td><span class="gst-code" id="gst24">24AADCS3054Q1Z2</span></td>
+              <td class="contact">+91 95129-99160</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst24')">Copy</button></td>
+              <td class="location-cell"><span class="map-btn is-disabled">No map</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2600);
+    }
+
+    function copyGST(id) {
+      const gstElement = document.getElementById(id);
+      const gst = gstElement ? gstElement.innerText.trim() : "";
+
+      if (!gst) {
+        showToast("GST number not found");
+        return;
+      }
+
+      navigator.clipboard.writeText(gst).then(
+        () => showToast("Copied GST: " + gst),
+        () => showToast("Unable to copy GST")
+      );
+    }
+
+    function editGST(id) {
+      const cell = document.getElementById(id).closest("td");
+      const currentValue = document.getElementById(id).innerText.trim();
+      cell.innerHTML = `
+        <input type="text" id="edit-${id}" value="${currentValue}" maxlength="15">
+        <span id="error-${id}" class="error"></span>
+        <div class="btn-group">
+          <button class="btn save-btn" type="button" onclick="saveGST('${id}')">Save</button>
+          <button class="btn delete-btn" type="button" onclick="deleteRow(this)">Delete</button>
+        </div>
+      `;
+    }
+
+    function saveGST(id) {
+      const input = document.getElementById(`edit-${id}`);
+      const error = document.getElementById(`error-${id}`);
+      const newValue = input.value.trim().toUpperCase();
+      const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+      if (!gstRegex.test(newValue)) {
+        error.textContent = "Invalid GST format";
+        return;
+      }
+
+      input.closest("td").innerHTML = `<span class="gst-code" id="${id}">${newValue}</span>`;
+      showToast("Updated GST: " + newValue);
+    }
+
+    function deleteRow(btn) {
+      const row = btn.closest("tr");
+      if (confirm("Are you sure you want to delete this transport?")) {
+        row.remove();
+        showToast("Transport deleted");
+      }
+    }
+
+  </script>
+</body>
+</html>
