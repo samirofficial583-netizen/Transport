@@ -24,112 +24,237 @@
       --radius: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       min-height: 100vh;
-      margin: 0;
       font-family: "Inter", Arial, sans-serif;
       color: var(--text);
-      background:
-        linear-gradient(135deg, rgba(0, 166, 166, 0.08) 25%, transparent 25%) 0 0 / 24px 24px,
-        linear-gradient(315deg, rgba(11, 31, 51, 0.05) 25%, transparent 25%) 0 0 / 28px 28px,
-        radial-gradient(circle at top left, rgba(0, 166, 166, 0.18), transparent 34rem),
-        linear-gradient(180deg, #edf5f7 0%, #f8fbfc 46%, #eef4f6 100%);
+      background: linear-gradient(180deg, #edf5f7 0%, #f8fbfc 46%, #eef4f6 100%);
+      overflow-x: hidden;
     }
 
-    button,
-    input {
-      font: inherit;
+    button, input { font: inherit; }
+
+    /* ─── ANIMATED CANVAS BACKGROUND ─── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
     }
 
+    /* ─── SURFACE GRID OVERLAY ─── */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,166,166,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,166,166,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridDrift 20s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 48px 48px; }
+    }
+
+    /* ─── APP SHELL ─── */
     .app-shell {
+      position: relative;
+      z-index: 1;
       width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
       padding: 28px 0 36px;
     }
 
+    /* ─── TOPBAR ─── */
     .topbar {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 18px;
       align-items: center;
-      padding: 22px 24px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.08), transparent 42%),
-        linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 62%, #064d55 100%);
-      box-shadow: var(--shadow);
+      padding: 22px 28px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 62%, #064d55 100%);
+      box-shadow: 0 28px 64px rgba(13,38,58,0.22), 0 0 0 1px rgba(0,166,166,0.18) inset;
       color: #fff;
+      overflow: hidden;
+      position: relative;
+      animation: slideDown 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* animated shimmer sweep across the header */
+    .topbar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmerSweep 3.5s ease-in-out infinite;
+    }
+
+    @keyframes shimmerSweep {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* pulsing glow ring */
+    .topbar::after {
+      content: "";
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,166,166,0.25), transparent 70%);
+      animation: pulseGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { transform: scale(1); opacity: 0.6; }
+      to   { transform: scale(1.4); opacity: 1; }
     }
 
     .eyebrow {
-      margin: 0 0 6px;
       color: #8ee2dc;
       font-size: 0.76rem;
       font-weight: 800;
       letter-spacing: 0.14em;
       text-transform: uppercase;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.6s 0.2s both;
     }
 
     h1 {
-      margin: 0;
       font-size: clamp(1.55rem, 3vw, 2.35rem);
       line-height: 1.1;
-      letter-spacing: 0;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.6s 0.35s both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* animated truck icon in header */
+    .truck-anim {
+      position: absolute;
+      bottom: 12px; right: 120px;
+      font-size: 1.4rem;
+      opacity: 0.18;
+      animation: truckDrive 8s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes truckDrive {
+      0%   { transform: translateX(80px); opacity: 0; }
+      10%  { opacity: 0.18; }
+      90%  { opacity: 0.18; }
+      100% { transform: translateX(-320px); opacity: 0; }
     }
 
     .summary-chip {
+      position: relative;
+      z-index: 1;
       display: inline-flex;
       align-items: center;
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,0.22);
       border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.11);
+      background: rgba(255,255,255,0.11);
       color: #eafdfb;
       font-size: 0.9rem;
       font-weight: 700;
       white-space: nowrap;
+      animation: fadeUp 0.6s 0.5s both;
+      backdrop-filter: blur(8px);
     }
 
+    .chip-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: blink 1.8s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* animated counter */
+    #counter { display: inline-block; }
+
+    /* ─── TOOLBAR ─── */
     .toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
       justify-content: space-between;
-      margin: 18px 0 12px;
+      margin: 20px 0 14px;
+      animation: fadeUp 0.6s 0.55s both;
     }
 
     .toolbar-title {
-      margin: 0;
       color: var(--navy);
       font-size: 1rem;
       font-weight: 800;
     }
 
     .toolbar-note {
-      margin: 4px 0 0;
+      margin-top: 4px;
       color: var(--muted);
       font-size: 0.88rem;
     }
 
-    .table-card {
+    /* route pulse bar */
+    .route-bar {
+      height: 4px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--navy), var(--teal), var(--navy));
+      background-size: 200%;
+      animation: routeFlow 2.5s linear infinite;
+      margin: 6px 0 0;
+      border-radius: 99px;
       overflow: hidden;
-      border: 1px solid rgba(216, 228, 234, 0.95);
-      border-radius: var(--radius);
-      background: rgba(255, 255, 255, 0.88);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
     }
 
-    .table-scroll {
-      overflow-x: auto;
+    @keyframes routeFlow {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
+
+    /* ─── TABLE CARD ─── */
+    .table-card {
+      overflow: hidden;
+      border: 1px solid rgba(216,228,234,0.95);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      animation: fadeUp 0.6s 0.65s both;
+    }
+
+    .table-scroll { overflow-x: auto; }
 
     table {
       width: 100%;
@@ -138,8 +263,7 @@
       border-spacing: 0;
     }
 
-    th,
-    td {
+    th, td {
       padding: 14px 16px;
       border-bottom: 1px solid var(--line);
       text-align: left;
@@ -149,7 +273,7 @@
     th {
       position: sticky;
       top: 0;
-      z-index: 1;
+      z-index: 2;
       background: #f1f8f8;
       color: #234054;
       font-size: 0.76rem;
@@ -159,30 +283,70 @@
       white-space: nowrap;
     }
 
-    td {
-      background: rgba(255, 255, 255, 0.72);
-      color: var(--text);
-      font-size: 0.93rem;
+    /* header column underline slide-in */
+    th::after {
+      content: "";
+      display: block;
+      height: 2px;
+      background: var(--teal);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      border-radius: 99px;
+      margin-top: 4px;
     }
 
-    tbody tr:nth-child(even) td {
-      background: rgba(246, 249, 251, 0.86);
+    th:hover::after { transform: scaleX(1); }
+
+    td {
+      background: rgba(255,255,255,0.72);
+      color: var(--text);
+      font-size: 0.93rem;
+      transition: background 0.22s ease, transform 0.18s ease;
     }
+
+    tbody tr {
+      opacity: 0;
+      transform: translateX(-18px);
+      transition: background 0.22s ease;
+    }
+
+    tbody tr.row-visible {
+      animation: rowSlide 0.42s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    @keyframes rowSlide {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    tbody tr:nth-child(even) td { background: rgba(246,249,251,0.86); }
 
     tbody tr:hover td {
       background: var(--cyan);
     }
 
-    tbody tr:last-child td {
-      border-bottom: 0;
+    tbody tr:hover .transport-name {
+      color: var(--teal-dark);
     }
+
+    /* sliding left accent on row hover */
+    tbody tr { position: relative; }
+    tbody tr td:first-child {
+      border-left: 3px solid transparent;
+      transition: border-color 0.22s ease, background 0.22s ease;
+    }
+    tbody tr:hover td:first-child { border-left-color: var(--teal); }
+
+    tbody tr:last-child td { border-bottom: 0; }
 
     .transport-name {
       min-width: 290px;
       font-weight: 700;
       color: #102c42;
+      transition: color 0.22s;
     }
 
+    /* GST code with shimmer on hover */
     .gst-code {
       display: inline-flex;
       align-items: center;
@@ -196,6 +360,31 @@
       font-weight: 800;
       letter-spacing: 0.04em;
       white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.22s, border-color 0.22s;
+    }
+
+    .gst-code::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,166,166,0.15), transparent);
+      transform: translateX(-100%);
+      transition: none;
+    }
+
+    tr:hover .gst-code::after {
+      animation: gstShimmer 0.8s ease forwards;
+    }
+
+    @keyframes gstShimmer {
+      to { transform: translateX(100%); }
+    }
+
+    tr:hover .gst-code {
+      box-shadow: 0 0 0 2px rgba(0,166,166,0.25);
+      border-color: var(--teal);
     }
 
     .contact {
@@ -205,14 +394,13 @@
       white-space: nowrap;
     }
 
-    .action-cell,
-    .location-cell {
+    .action-cell, .location-cell {
       width: 94px;
       text-align: center;
     }
 
-    .btn,
-    .map-btn {
+    /* ─── BUTTONS ─── */
+    .btn, .map-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -224,44 +412,65 @@
       font-size: 0.86rem;
       font-weight: 800;
       text-decoration: none;
+      position: relative;
+      overflow: hidden;
       transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
       white-space: nowrap;
     }
 
-    .btn:focus-visible,
-    .map-btn:focus-visible,
-    input:focus-visible {
-      outline: 3px solid rgba(0, 166, 166, 0.3);
+    /* ripple layer */
+    .btn::before, .map-btn::before {
+      content: "";
+      position: absolute;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.32);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .btn.rippling::before, .map-btn.rippling::before {
+      animation: ripple 0.55s ease-out forwards;
+    }
+
+    @keyframes ripple {
+      to { width: 240px; height: 240px; opacity: 0; }
+    }
+
+    .btn:focus-visible, .map-btn:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(0,166,166,0.3);
       outline-offset: 2px;
     }
 
-    .btn:hover,
-    .map-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 18px rgba(11, 31, 51, 0.16);
+    .btn:hover, .map-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 22px rgba(11,31,51,0.18);
     }
 
-    .copy-btn,
-    .save-btn,
-    .add-btn {
+    .btn:active, .map-btn:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .copy-btn, .save-btn, .add-btn {
       background: var(--teal);
       color: #fff;
     }
 
-    .copy-btn:hover,
-    .save-btn:hover,
-    .add-btn:hover {
-      background: var(--teal-dark);
+    .copy-btn:hover, .save-btn:hover, .add-btn:hover { background: var(--teal-dark); }
+
+    .copy-btn.copied {
+      background: #1a7a3f;
+      animation: successPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
 
-    .delete-btn {
-      background: var(--warning);
-      color: #fff;
+    @keyframes successPop {
+      0%   { transform: scale(0.9); }
+      60%  { transform: scale(1.1); }
+      100% { transform: scale(1); }
     }
 
-    .delete-btn:hover {
-      background: #b93f3f;
-    }
+    .delete-btn { background: var(--warning); color: #fff; }
+    .delete-btn:hover { background: #b93f3f; }
 
     .map-btn {
       background: #e7f7f5;
@@ -285,10 +494,7 @@
       flex-wrap: wrap;
     }
 
-    .add-btn {
-      min-height: 42px;
-      padding: 0 16px;
-    }
+    .add-btn { min-height: 42px; padding: 0 16px; }
 
     input[type="text"] {
       width: 100%;
@@ -299,6 +505,12 @@
       border-radius: 7px;
       background: #fff;
       color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,166,166,0.15);
     }
 
     .error {
@@ -309,96 +521,181 @@
       font-weight: 700;
     }
 
+    /* ─── TOAST ─── */
     #toast {
       position: fixed;
       right: 22px;
       bottom: 22px;
       z-index: 20;
       max-width: min(360px, calc(100vw - 36px));
-      padding: 13px 16px;
-      border-radius: 8px;
-      background: rgba(11, 31, 51, 0.95);
+      padding: 13px 18px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(11,31,51,0.97), rgba(8,127,131,0.95));
       color: #fff;
-      box-shadow: 0 18px 32px rgba(11, 31, 51, 0.24);
+      box-shadow: 0 18px 40px rgba(11,31,51,0.32);
       font-size: 0.92rem;
       font-weight: 700;
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(18px) scale(0.94);
       visibility: hidden;
-      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+      transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.22,1,0.36,1), visibility 0.28s;
+      border-left: 4px solid var(--teal);
     }
 
     #toast.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
       visibility: visible;
     }
 
-    tr.new-row td {
-      animation: fadeIn 0.35s ease-in-out;
+    /* ─── NEW ROW ─── */
+    tr.new-row td { animation: rowFadeIn 0.42s cubic-bezier(0.22,1,0.36,1); }
+
+    @keyframes rowFadeIn {
+      from { opacity: 0; transform: translateX(-14px); background: rgba(0,166,166,0.1); }
+      to   { opacity: 1; transform: translateX(0); }
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* ─── FLOATING PARTICLES ─── */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      animation: floatUp var(--dur, 7s) var(--delay, 0s) ease-in infinite;
     }
 
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+      10%  { opacity: var(--op, 0.25); }
+      90%  { opacity: var(--op, 0.25); }
+      100% { opacity: 0; transform: translateY(-100vh) scale(1); }
+    }
+
+    /* ─── SCROLLBAR ─── */
+    .table-scroll::-webkit-scrollbar { height: 6px; }
+    .table-scroll::-webkit-scrollbar-track { background: #f0f5f7; }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 99px; }
+
+    /* ─── SEARCH BAR ─── */
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 10px 8px 34px;
+      border: 1px solid #b9d5d8;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    #searchInput:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(0,166,166,0.15);
+    }
+
+    /* highlight matched text */
+    mark {
+      background: rgba(0,166,166,0.22);
+      color: var(--teal-dark);
+      border-radius: 3px;
+      padding: 0 1px;
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      margin: 14px 0 0;
+      flex-wrap: wrap;
+      animation: fadeUp 0.6s 0.7s both;
+    }
+
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid var(--line);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--navy);
+      box-shadow: 0 2px 8px rgba(13,38,58,0.07);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 760px) {
-      .app-shell {
-        width: min(100% - 18px, 1180px);
-        padding-top: 12px;
-      }
-
-      .topbar {
-        grid-template-columns: 1fr;
-        padding: 18px;
-      }
-
-      .summary-chip {
-        justify-content: center;
-        width: 100%;
-      }
-
-      th,
-      td {
-        padding: 12px;
-      }
-
-      .toolbar {
-        align-items: stretch;
-      }
-
-      .add-btn {
-        width: 100%;
-      }
-
-      #toast {
-        right: 12px;
-        bottom: 12px;
-      }
+      .app-shell { width: min(100% - 18px, 1180px); padding-top: 12px; }
+      .topbar { grid-template-columns: 1fr; padding: 18px; }
+      .summary-chip { justify-content: center; width: 100%; }
+      th, td { padding: 12px; }
+      .toolbar { align-items: stretch; }
+      .add-btn { width: 100%; }
+      #toast { right: 12px; bottom: 12px; }
+      .stats-row { gap: 8px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- animated canvas for particle/route trails -->
+  <canvas id="bg-canvas"></canvas>
+  <div class="grid-overlay"></div>
+
   <main class="app-shell">
     <header class="topbar">
       <div>
         <p class="eyebrow">Logistics directory</p>
         <h1>Transporter Details</h1>
       </div>
-      <div class="summary-chip">24 transporters listed</div>
+      <div class="summary-chip">
+        <span class="chip-dot"></span>
+        <span id="counter">25</span>&nbsp;transporters listed
+      </div>
+      <span class="truck-anim">🚛</span>
     </header>
+
+    <div class="stats-row">
+      <div class="stat-chip"><span class="stat-dot" style="background:#00a6a6"></span>Active Directory</div>
+      <div class="stat-chip"><span class="stat-dot" style="background:#1a7a3f"></span>GST Verified</div>
+      <div class="stat-chip"><span class="stat-dot" style="background:#0b1f33"></span>Gujarat Region</div>
+    </div>
 
     <section class="toolbar" aria-label="Transport table tools">
       <div>
         <p class="toolbar-title">Saved transporter contacts</p>
         <p class="toolbar-note">Copy GST numbers quickly and open valid map locations.</p>
+        <div class="route-bar" style="width:180px"></div>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search transporters…" oninput="filterTable(this.value)" aria-label="Search transporters">
       </div>
     </section>
 
@@ -419,178 +716,177 @@
               <td class="transport-name">PAVAN TRANSPORT - BARCILONA</td>
               <td><span class="gst-code" id="gst1">24AAVFP9599E1ZC</span></td>
               <td class="contact">+91 00000-00000</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst1')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst1',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/NA5x4WtrFa44oGyL9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">VIKASH TRANSPORT - ODHAV G.I.D.C.</td>
               <td><span class="gst-code" id="gst2">24AIQPC2885H1Z3</span></td>
               <td class="contact">+91 96248-05418</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst2')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst2',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/4uPNhs6X7CuovTJj8" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">KABRA EXPRESS LOGISTICS PVT LTD - ROAD NO 8.</td>
               <td><span class="gst-code" id="gst3">24AAGCK6871L1Z2</span></td>
               <td class="contact">+91 96388-66001</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst3')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst3',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/rbjqBFDhrMVqLF5L9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">SHREE PRAKASH TRANSPORT - ODHAV G.I.D.C.</td>
               <td><span class="gst-code" id="gst4">24ACYPP9161H1ZW</span></td>
               <td class="contact">+91 00000-00000</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst4')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst4',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/QB37bbUiTHuPFFAE8" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">ALPESH ROADWAYS - VEPARI</td>
               <td><span class="gst-code" id="gst5">24AAEFA9684Q1ZP</span></td>
               <td class="contact">+91 99099-90170</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst5')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst5',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/xB3gGZZjLayesJGHA" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">VIKASH TRADE &amp; TRANSPORT - IDAGAH</td>
               <td><span class="gst-code" id="gst6">24AAQPR7210K1ZD</span></td>
               <td class="contact">+91 00000-00000</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst6')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst6',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/cSjuuswAGPr8p52i8" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">JAMANAGAR TRANSPORT COMPANY - ODHAV</td>
               <td><span class="gst-code" id="gst7">24AAOFJ0236F1ZN</span></td>
               <td class="contact">+91 90990-41466</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst7')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst7',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/DZwSq2oznGKA2Y5C9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">DIAMOND TRANSPORT CO. - ODHAV SAMSAN</td>
               <td><span class="gst-code" id="gst8">24ADCPK4931F1ZX</span></td>
               <td class="contact">+91 90161-11277</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst8')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst8',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/8FvEwjfxDwz6NwDm7" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
-              <td class="transport-name">AVINASH CARGO PVT LTD (A.C.P.L ) - SINGARAVA</td>
+              <td class="transport-name">AVINASH CARGO PVT LTD (A.C.P.L) - SINGARAVA</td>
               <td><span class="gst-code" id="gst9">24AAFCA7488L1Z6</span></td>
               <td class="contact">+91 86696-73821</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst9')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst9',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/ZCWhHAZtZFDaomMy8" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">TRILOK CARGO SERVICE - CHOTALAL NI CHALI</td>
               <td><span class="gst-code" id="gst10">24AAWFT7042D1ZZ</span></td>
               <td class="contact">+91 98252-09690, 97234-33333</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst10')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst10',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/dz4Dywvnrk43effA9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">PATEL TRANSPORT</td>
               <td><span class="gst-code" id="gst11">24AAEFP9744Q1ZH</span></td>
               <td class="contact">+91 95121-80056</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst11')">Copy</button></td>
-              <td class="location-cell"><a class="map-btn" href=" 00 00 00 " target="_blank" rel="noopener">Map</a></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst11',this)">Copy</button></td>
+              <td class="location-cell"><a class="map-btn is-disabled" href="#" aria-disabled="true">No Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">VIKASH ROAD CARRIER - BILESHWAR</td>
               <td><span class="gst-code" id="gst12">24AIQPC2885H1Z3</span></td>
               <td class="contact">+91 88490-08635</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst12')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst12',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/2pEXsLCf3Q2mcfKV9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">VRL LOGISTICS LTD - KATHAWADA G.I.D.C.</td>
               <td><span class="gst-code" id="gst13">29AABCV3609C1ZJ</span></td>
               <td class="contact">+91 74056-97617</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst13')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst13',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/f1DVELaZnrSF5u9Z6" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">H.H. ROADWAYS - ODHAV SAMSHAN</td>
               <td><span class="gst-code" id="gst14">24AABFH2311L1ZT</span></td>
               <td class="contact">+91 92271-93506</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst14')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst14',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/Dsacn2S5mJqdK7Dr9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">YASH ROADLINE - PREMDARAWAJA</td>
               <td><span class="gst-code" id="gst15">24CMLPB7231H1Z9</span></td>
               <td class="contact">+91 96018-73422</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst15')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst15',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/RmxSonfLub8DSPhg9" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">TCI EXPRESS LIMITED</td>
               <td><span class="gst-code" id="gst16">06AADCT0663J4Z9</span></td>
               <td class="contact">+91 81782-73023</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst16')">Copy</button></td>
-              <td class="location-cell"><a class="map-btn" href=" 00 00 00 " target="_blank" rel="noopener">Map</a></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst16',this)">Copy</button></td>
+              <td class="location-cell"><a class="map-btn is-disabled" href="#" aria-disabled="true">No Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">SHUBH MANGAL ROADWAYS - ODHAV</td>
               <td><span class="gst-code" id="gst17">24AAXFS7188Q2ZS</span></td>
               <td class="contact">+91 82008-05023</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst17')">Copy</button></td>
-              <td class="location-cell"><a class="map-btn" href=" 00 00 00 " target="_blank" rel="noopener">Map</a></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst17',this)">Copy</button></td>
+              <td class="location-cell"><a class="map-btn is-disabled" href="#" aria-disabled="true">No Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">SHREE KANAIYA TRANSPORT SERVICE</td>
               <td><span class="gst-code" id="gst18">24AGBPP8515C1ZP</span></td>
               <td class="contact">+91 98981-20368</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst18')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst18',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/Tzv4Q1mnkncnE5S27" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">BHAVANA ROADWAYS</td>
               <td><span class="gst-code" id="gst19">24AADFB5223B1Z9</span></td>
               <td class="contact">+91 98985-07561</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst19')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst19',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/oS31oP3fEAKT6xhu5" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">SHREE HARI ROADLINES</td>
               <td><span class="gst-code" id="gst20">24ACAPP2720Q1ZI</span></td>
-              <td class="contact">+91 76003-23768,92277-70888</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst20')">Copy</button></td>
+              <td class="contact">+91 76003-23768, 92277-70888</td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst20',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/nQBafaaKeAfkPxyQ8?g_st=aw" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">RAVINDRA TRANSPORT CO.</td>
               <td><span class="gst-code" id="gst21">24ACIPA6610J2ZX</span></td>
               <td class="contact">+91 99988-20106</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst21')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst21',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/n8VvQDXP1rDUBu438" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">TANNA TRAVELS CO.</td>
               <td><span class="gst-code" id="gst22">XXXXXXXXXXXXXXX</span></td>
               <td class="contact">+91 00000-00000</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst22')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst22',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/PQtMAAtcCENgM75E7" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">JAY BHOLE TRANSPORT</td>
               <td><span class="gst-code" id="gst23">XXXXXXXXXXXXXXX</span></td>
               <td class="contact">+91 99250-38213</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst23')">Copy</button></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst23',this)">Copy</button></td>
               <td class="location-cell"><a class="map-btn" href="https://maps.app.goo.gl/AxdSNRBvr7mT8ke79" target="_blank" rel="noopener">Map</a></td>
             </tr>
             <tr>
               <td class="transport-name">SURAT AHMEDABAD TRANSPORT PVT. LTD</td>
               <td><span class="gst-code" id="gst24">24AADCS3054Q1Z2</span></td>
               <td class="contact">+91 95129-99160</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst24')">Copy</button></td>
-              <td class="location-cell"><a class="map-btn" href=" 00 00 00 " target="_blank" rel="noopener">Map</a></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst24',this)">Copy</button></td>
+              <td class="location-cell"><a class="map-btn is-disabled" href="#" aria-disabled="true">No Map</a></td>
             </tr>
-<tr>
-     <td class="transport-name">transport name </td>
-              <td><span class="gst-code" id="gst25">xxxxxxxxxxxxxx</span></td>
+            <tr>
+              <td class="transport-name">TRANSPORT NAME</td>
+              <td><span class="gst-code" id="gst25">XXXXXXXXXXXXXX</span></td>
               <td class="contact">+91 00000-00000</td>
-              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst25')">Copy</button></td>
-              <td class="location-cell"><a class="map-btn" href=" 00 00 00 " target="_blank" rel="noopener">Map</a></td>
+              <td class="action-cell"><button class="btn copy-btn" type="button" onclick="copyGST('gst25',this)">Copy</button></td>
+              <td class="location-cell"><a class="map-btn is-disabled" href="#" aria-disabled="true">No Map</a></td>
             </tr>
-           
           </tbody>
         </table>
       </div>
@@ -600,30 +896,192 @@
   <div id="toast" role="status" aria-live="polite"></div>
 
   <script>
+    /* ── CANVAS BACKGROUND: animated route lines + orbs ── */
+    (function () {
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      let W, H, particles, routes;
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function randomBetween(a, b) { return a + Math.random() * (b - a); }
+
+      function initParticles() {
+        particles = Array.from({ length: 28 }, () => ({
+          x: randomBetween(0, W),
+          y: randomBetween(H * 0.3, H),
+          r: randomBetween(2, 6),
+          speed: randomBetween(0.2, 0.6),
+          opacity: randomBetween(0.04, 0.14),
+          color: Math.random() > 0.5 ? "0,166,166" : "11,31,51",
+        }));
+      }
+
+      /* route trails – bezier paths that animate a moving dot */
+      function initRoutes() {
+        routes = Array.from({ length: 5 }, () => makeRoute());
+      }
+
+      function makeRoute() {
+        const y = randomBetween(H * 0.1, H * 0.9);
+        return {
+          p1x: -60, p1y: y + randomBetween(-60, 60),
+          cp1x: W * 0.25, cp1y: y + randomBetween(-120, 120),
+          cp2x: W * 0.75, cp2y: y + randomBetween(-120, 120),
+          p2x: W + 60, p2y: y + randomBetween(-60, 60),
+          t: randomBetween(0, 1),
+          speed: randomBetween(0.0008, 0.0018),
+          color: Math.random() > 0.5 ? "rgba(0,166,166,0.18)" : "rgba(11,31,51,0.10)",
+          dotSize: randomBetween(3, 7),
+        };
+      }
+
+      function bezierPoint(t, p1, cp1, cp2, p2) {
+        const mt = 1 - t;
+        return mt * mt * mt * p1 + 3 * mt * mt * t * cp1 + 3 * mt * t * t * cp2 + t * t * t * p2;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        /* route paths */
+        routes.forEach(r => {
+          ctx.beginPath();
+          ctx.moveTo(r.p1x, r.p1y);
+          ctx.bezierCurveTo(r.cp1x, r.cp1y, r.cp2x, r.cp2y, r.p2x, r.p2y);
+          ctx.strokeStyle = r.color;
+          ctx.lineWidth = 1;
+          ctx.setLineDash([6, 10]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          /* moving dot along route */
+          const dx = bezierPoint(r.t, r.p1x, r.cp1x, r.cp2x, r.p2x);
+          const dy = bezierPoint(r.t, r.p1y, r.cp1y, r.cp2y, r.p2y);
+          ctx.beginPath();
+          ctx.arc(dx, dy, r.dotSize, 0, Math.PI * 2);
+          ctx.fillStyle = r.color.replace("0.18","0.7").replace("0.10","0.5");
+          ctx.fill();
+
+          r.t += r.speed;
+          if (r.t > 1) {
+            Object.assign(r, makeRoute());
+            r.t = 0;
+          }
+        });
+
+        /* floating orbs */
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color},${p.opacity})`;
+          ctx.fill();
+          p.y -= p.speed;
+          if (p.y + p.r < 0) {
+            p.y = H + p.r;
+            p.x = randomBetween(0, W);
+          }
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      initParticles();
+      initRoutes();
+      draw();
+      window.addEventListener("resize", () => { resize(); initParticles(); initRoutes(); });
+    })();
+
+    /* ── STAGGERED ROW REVEAL via IntersectionObserver ── */
+    (function () {
+      const rows = document.querySelectorAll("tbody tr");
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const idx = [...rows].indexOf(entry.target);
+            setTimeout(() => {
+              entry.target.classList.add("row-visible");
+            }, idx * 55);
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.05 });
+      rows.forEach(r => obs.observe(r));
+    })();
+
+    /* ── ANIMATED COUNTER ── */
+    (function () {
+      const el = document.getElementById("counter");
+      const target = parseInt(el.textContent, 10);
+      let cur = 0;
+      const step = Math.ceil(target / 28);
+      const interval = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = cur;
+        if (cur >= target) clearInterval(interval);
+      }, 50);
+    })();
+
+    /* ── RIPPLE on buttons ── */
+    document.addEventListener("click", e => {
+      const btn = e.target.closest(".btn, .map-btn");
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      btn.style.setProperty("--rx", (e.clientX - rect.left) + "px");
+      btn.style.setProperty("--ry", (e.clientY - rect.top) + "px");
+      btn.classList.remove("rippling");
+      void btn.offsetWidth;
+      btn.classList.add("rippling");
+      btn.addEventListener("animationend", () => btn.classList.remove("rippling"), { once: true });
+    });
+
+    /* ── TOAST ── */
+    let toastTimer;
     function showToast(message) {
       const toast = document.getElementById("toast");
       toast.innerText = message;
       toast.classList.add("show");
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2600);
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
     }
 
-    function copyGST(id) {
-      const gstElement = document.getElementById(id);
-      const gst = gstElement ? gstElement.innerText.trim() : "";
-
-      if (!gst) {
-        showToast("GST number not found");
-        return;
-      }
-
+    /* ── COPY GST ── */
+    function copyGST(id, btn) {
+      const el = document.getElementById(id);
+      const gst = el ? el.innerText.trim() : "";
+      if (!gst) { showToast("GST number not found"); return; }
       navigator.clipboard.writeText(gst).then(
-        () => showToast("Copied GST: " + gst),
+        () => {
+          showToast("✓ Copied: " + gst);
+          if (btn) {
+            const orig = btn.textContent;
+            btn.textContent = "✓ Done";
+            btn.classList.add("copied");
+            setTimeout(() => {
+              btn.textContent = orig;
+              btn.classList.remove("copied");
+            }, 1800);
+          }
+        },
         () => showToast("Unable to copy GST")
       );
     }
 
+    /* ── SEARCH / FILTER ── */
+    function filterTable(query) {
+      const q = query.toLowerCase().trim();
+      const rows = document.querySelectorAll("#transportTable tbody tr");
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(q) ? "" : "none";
+      });
+    }
+
+    /* ── EDIT / SAVE / DELETE (legacy support) ── */
     function editGST(id) {
       const cell = document.getElementById(id).closest("td");
       const currentValue = document.getElementById(id).innerText.trim();
@@ -633,8 +1091,7 @@
         <div class="btn-group">
           <button class="btn save-btn" type="button" onclick="saveGST('${id}')">Save</button>
           <button class="btn delete-btn" type="button" onclick="deleteRow(this)">Delete</button>
-        </div>
-      `;
+        </div>`;
     }
 
     function saveGST(id) {
@@ -642,12 +1099,7 @@
       const error = document.getElementById(`error-${id}`);
       const newValue = input.value.trim().toUpperCase();
       const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-
-      if (!gstRegex.test(newValue)) {
-        error.textContent = "Invalid GST format";
-        return;
-      }
-
+      if (!gstRegex.test(newValue)) { error.textContent = "Invalid GST format"; return; }
       input.closest("td").innerHTML = `<span class="gst-code" id="${id}">${newValue}</span>`;
       showToast("Updated GST: " + newValue);
     }
@@ -655,11 +1107,13 @@
     function deleteRow(btn) {
       const row = btn.closest("tr");
       if (confirm("Are you sure you want to delete this transport?")) {
-        row.remove();
-        showToast("Transport deleted");
+        row.style.animation = "none";
+        row.style.transition = "opacity 0.3s, transform 0.3s";
+        row.style.opacity = "0";
+        row.style.transform = "translateX(30px)";
+        setTimeout(() => { row.remove(); showToast("Transport deleted"); }, 320);
       }
     }
-
   </script>
 </body>
 </html>
