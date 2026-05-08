@@ -346,6 +346,72 @@
     body.admin-mode .admin-badge { display:inline-flex; animation:fadeUp 0.4s both; }
     .admin-badge-dot { width:7px; height:7px; border-radius:50%; background:#00d4a0; animation:blink 1.5s infinite; }
 
+    /* ── GST VALIDITY BADGE ── */
+    .gst-wrap { display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .gst-badge {
+      display:inline-flex; align-items:center; gap:3px;
+      padding:2px 7px; border-radius:99px; font-size:0.72rem; font-weight:800;
+      letter-spacing:0.04em; white-space:nowrap; flex-shrink:0;
+    }
+    .gst-badge.valid   { background:#d4f5e4; color:#1a7a3f; border:1px solid #a3e4bf; }
+    .gst-badge.invalid { background:#fde8e8; color:#b93f3f; border:1px solid #f5b8b8; }
+    .gst-badge.unknown { background:#f0f4f7; color:#627383; border:1px solid #d8e4ea; }
+
+    /* verify button */
+    .verify-btn {
+      display:inline-flex; align-items:center; gap:4px;
+      min-height:32px; padding:0 10px; border-radius:6px; border:1px solid #c0d8e8;
+      background:#eef6fb; color:#1a4f72; font-size:0.78rem; font-weight:800;
+      cursor:pointer; text-decoration:none; white-space:nowrap;
+      transition:background 0.18s, transform 0.16s, box-shadow 0.16s;
+    }
+    .verify-btn:hover { background:#d4ecf7; transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,100,160,0.15); }
+    .verify-btn:active { transform:scale(0.97); }
+    .verify-btn.ph { pointer-events:none; opacity:0.38; }
+
+    /* ── GST CHECKER PANEL ── */
+    .gst-checker {
+      display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;
+      padding:14px 18px; margin:0 0 16px;
+      border:1.5px solid rgba(0,130,200,0.22); border-radius:12px;
+      background:linear-gradient(135deg,rgba(255,255,255,0.95),rgba(238,246,251,0.8));
+      box-shadow:0 4px 18px rgba(0,100,160,0.08);
+      animation:fadeUp 0.5s 0.8s both;
+    }
+    .checker-label { font-size:0.78rem; font-weight:800; color:var(--navy); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:5px; display:block; }
+    .checker-input-wrap { position:relative; flex:1; min-width:200px; max-width:340px; }
+    .checker-input {
+      width:100%; min-height:42px; padding:9px 12px; border:1.5px solid #b9d5d8;
+      border-radius:8px; background:#fff; color:var(--text); font-size:0.93rem;
+      font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+      transition:border-color 0.2s, box-shadow 0.2s;
+    }
+    .checker-input:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(0,166,166,0.15); outline:none; }
+    .checker-result {
+      display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:8px;
+      font-size:0.88rem; font-weight:700; min-width:180px; flex:1;
+      border:1.5px solid transparent; transition:all 0.28s cubic-bezier(0.22,1,0.36,1);
+    }
+    .checker-result.idle   { background:#f6f9fb; border-color:var(--line); color:var(--muted); }
+    .checker-result.valid  { background:#d4f5e4; border-color:#7dd3a8; color:#1a5c34; animation:resultPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    .checker-result.invalid{ background:#fde8e8; border-color:#f5b8b8; color:#8c2020; animation:resultPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes resultPop { from { transform:scale(0.93); opacity:0.5; } to { transform:scale(1); opacity:1; } }
+    .checker-result-icon { font-size:1.1rem; }
+    .checker-actions { display:flex; gap:8px; align-items:center; }
+    .checker-check-btn {
+      min-height:42px; padding:0 18px; background:var(--teal); color:#fff;
+      border:0; border-radius:8px; font-size:0.88rem; font-weight:800; cursor:pointer;
+      transition:background 0.18s, transform 0.16s, box-shadow 0.16s;
+    }
+    .checker-check-btn:hover { background:var(--teal-dark); transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,166,166,0.3); }
+    .checker-portal-btn {
+      min-height:42px; padding:0 16px; background:#1a4f72; color:#fff;
+      border:0; border-radius:8px; font-size:0.88rem; font-weight:800; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+      transition:background 0.18s, transform 0.16s, box-shadow 0.16s;
+    }
+    .checker-portal-btn:hover { background:#123a56; transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,80,130,0.25); }
+
     /* ── TOAST ── */
     #toast {
       position:fixed; right:22px; bottom:22px; z-index:200; max-width:min(360px,calc(100vw - 36px));
@@ -435,6 +501,24 @@
     </div>
   </section>
 
+  <!-- GST CHECKER PANEL -->
+  <div class="gst-checker">
+    <div style="flex:0 0 100%">
+      <span class="checker-label">🔎 Quick GST Validator &amp; Portal Lookup</span>
+    </div>
+    <div class="checker-input-wrap">
+      <input class="checker-input" type="text" id="checkerInput" placeholder="Type GST number…" maxlength="15" oninput="liveCheck(this.value)" onkeydown="if(event.key==='Enter')runCheck()">
+    </div>
+    <div class="checker-actions">
+      <button class="checker-check-btn" type="button" onclick="runCheck()">Check Format</button>
+      <a class="checker-portal-btn" id="checkerPortalBtn" href="https://ewaybillgst.gov.in/Others/TaxPayerSearch.aspx" target="_blank" rel="noopener">🌐 Open Gov Portal</a>
+    </div>
+    <div class="checker-result idle" id="checkerResult">
+      <span class="checker-result-icon">💡</span>
+      <span id="checkerMsg">Enter a 15-character GST number to validate</span>
+    </div>
+  </div>
+
   <!-- ADMIN ADD PANEL -->
   <div class="admin-panel" id="adminPanel">
     <div class="panel-header">
@@ -482,6 +566,7 @@
             <th>G.S.T. Number</th>
             <th>Contact Number</th>
             <th>Copy</th>
+            <th>Verify GST</th>
             <th>Location</th>
             <th class="admin-th">Actions</th>
           </tr>
@@ -540,6 +625,28 @@ function save() { localStorage.setItem("transporters", JSON.stringify(records));
 /* ════════════════════════════════════════════
    RENDER TABLE
 ════════════════════════════════════════════ */
+const GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+const GST_PORTAL = "https://ewaybillgst.gov.in/Others/TaxPayerSearch.aspx";
+
+function gstValidity(gst) {
+  const g = gst.trim().toUpperCase();
+  if (/^[X-]+$/.test(g) || g.length < 15) return "unknown";
+  return GST_REGEX.test(g) ? "valid" : "invalid";
+}
+
+function gstBadgeHtml(gst) {
+  const v = gstValidity(gst);
+  const labels = { valid:"✓ Valid Format", invalid:"✗ Invalid Format", unknown:"— Placeholder" };
+  return `<span class="gst-badge ${v}">${labels[v]}</span>`;
+}
+
+function verifyBtnHtml(gst) {
+  const g = gst.trim().toUpperCase();
+  const isPlaceholder = /^[X\-\s]+$/.test(g) || g.length < 15;
+  if (isPlaceholder) return `<span class="verify-btn ph" title="No valid GST to verify">🌐 Verify</span>`;
+  return `<a class="verify-btn" href="${GST_PORTAL}" target="_blank" rel="noopener" title="Open GST portal to verify ${escHtml(g)}">🌐 Verify</a>`;
+}
+
 function renderTable(data) {
   const tbody = document.getElementById("tbody");
   tbody.innerHTML = "";
@@ -551,9 +658,15 @@ function renderTable(data) {
     tr.innerHTML = `
       <td style="color:var(--muted);font-size:0.8rem;font-weight:700;min-width:36px">${idx+1}</td>
       <td class="transport-name">${escHtml(r.name)}</td>
-      <td><span class="gst-code" id="gst_${r.id}">${escHtml(r.gst)}</span></td>
+      <td>
+        <div class="gst-wrap">
+          <span class="gst-code" id="gst_${r.id}">${escHtml(r.gst)}</span>
+          ${gstBadgeHtml(r.gst)}
+        </div>
+      </td>
       <td class="contact">${escHtml(r.contact)}</td>
       <td class="action-cell"><button class="btn copy-btn" type="button" data-id="${r.id}">Copy</button></td>
+      <td class="action-cell">${verifyBtnHtml(r.gst)}</td>
       <td class="location-cell">${mapCell}</td>
       <td class="admin-col">
         <div class="admin-actions">
@@ -607,6 +720,49 @@ function filterTable(q) {
   q = q.toLowerCase().trim();
   const rows = document.querySelectorAll("#tbody tr");
   rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none"; });
+}
+
+/* ════════════════════════════════════════════
+   GST CHECKER PANEL
+════════════════════════════════════════════ */
+function liveCheck(val) {
+  const g = val.trim().toUpperCase();
+  const box = document.getElementById("checkerResult");
+  const msg = document.getElementById("checkerMsg");
+  const portalBtn = document.getElementById("checkerPortalBtn");
+
+  if (!g) {
+    box.className = "checker-result idle";
+    msg.textContent = "Enter a 15-character GST number to validate";
+    portalBtn.href = GST_PORTAL;
+    return;
+  }
+  if (g.length < 15) {
+    box.className = "checker-result idle";
+    msg.textContent = `${g.length}/15 characters entered…`;
+    return;
+  }
+
+  const valid = GST_REGEX.test(g);
+  box.className = "checker-result " + (valid ? "valid" : "invalid");
+  if (valid) {
+    const state = g.substring(0,2);
+    const pan   = g.substring(2,12);
+    msg.innerHTML = `<strong>✓ Valid GST format</strong> — State code <strong>${state}</strong> · PAN <strong>${pan}</strong>`;
+  } else {
+    msg.innerHTML = `<strong>✗ Invalid format</strong> — does not match the 15-digit GST pattern`;
+  }
+  portalBtn.href = GST_PORTAL;
+}
+
+function runCheck() {
+  const val = document.getElementById("checkerInput").value.trim().toUpperCase();
+  if (!val) { showToast("⚠️ Please enter a GST number first."); return; }
+  liveCheck(val);
+  if (val.length === 15) {
+    const valid = GST_REGEX.test(val);
+    showToast(valid ? `✅ ${val} — Valid GST format! Click "Open Gov Portal" to verify on the government site.` : `❌ ${val} — Invalid GST format. Please check the number.`);
+  }
 }
 
 /* ════════════════════════════════════════════
